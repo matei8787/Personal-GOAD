@@ -1,0 +1,21 @@
+- name: Basic configs
+  hosts: windows
+  roles:
+    - base_config
+    - rename_host
+
+
+- name: Provision Forrest
+  hosts: root_controller
+  roles:
+    - first_domain_controller
+
+- name: Add DCs
+  hosts: domain_controllers
+  roles:
+    - added_domain_controller
+    
+- name: Add Workstations
+  hosts: workstations
+  roles:
+    - join_domain

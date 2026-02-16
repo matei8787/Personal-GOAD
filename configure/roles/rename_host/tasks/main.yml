@@ -1,0 +1,11 @@
+- name: Change Hostname
+  ansible.windows.win_hostname:
+    name: "{{ machine_hostname }}"
+  when: machine_hostname is defined
+  register: hostname_result
+
+- name: Reboot if Hostname Changed
+  ansible.windows.win_reboot:
+  when:
+    - hostname_result is not skipped
+    - hostname_result.reboot_required

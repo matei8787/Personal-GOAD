@@ -1,0 +1,17 @@
+# Copy to vault.yml in this same directory, fill in, then encrypt it:
+#   ansible-vault encrypt inventory/group_vars/all/vault.yml
+#
+# It lives under group_vars/all/ so Ansible loads it alongside vars.yml for
+# every host. A file named group_vars/vault.yml would only apply to a group
+# called "vault", which does not exist.
+#
+# vault.yml is git-ignored either way, so an unencrypted copy never reaches
+# the repo. Encrypting it still matters: it keeps the credentials out of
+# plaintext on a laptop that also runs the attack tooling against this lab.
+#
+# These are throwaway lab credentials. The whole point of the lab is that they
+# get cracked, so they must never match anything used outside it.
+
+vault_safe_mode_password: "REPLACE_ME"
+vault_server_password: "REPLACE_ME"
+vault_workstation_password: "REPLACE_ME"

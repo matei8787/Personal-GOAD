@@ -1,0 +1,13 @@
+# Copy to terraform.tfvars and fill in. The real file is git-ignored.
+
+pxm_url          = "https://pve.example.internal:8006/api2/json"
+pxm_token_id     = "root@pam!terraform"
+pxm_token_secret = "REPLACE_ME"
+
+ssh_public_key = "ssh-ed25519 AAAA... user@host"
+
+# Throwaway local account created before the domain join.
+local_admin_password = "REPLACE_ME"
+
+# Uncomment only while the Proxmox API still has a self-signed certificate.
+# pxm_insecure = true

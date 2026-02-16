@@ -1,0 +1,20 @@
+# Non-secret lab settings.
+# Credentials come from vault.yml in this directory (ansible-vault, git-ignored).
+
+# Domain Settings
+domain_name: "goad.test"
+netbios_name: "goad"
+safe_mode_password: "{{ vault_safe_mode_password }}"
+
+# User Settings
+server_user: Administrator
+server_password: "{{ vault_server_password }}"
+workstation_user: Dorb
+workstation_password: "{{ vault_workstation_password }}"
+
+# Network Settings
+# The IP of your future DC (Host: GOAD-DC01)
+dc1_ip: "10.69.11.5"
+dc2_ip: "10.69.11.6"
+work1_ip: "10.69.11.7"
+work2_ip: "10.69.11.8"

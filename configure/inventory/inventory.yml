@@ -1,0 +1,28 @@
+all:
+  children:
+    windows:
+      children:
+        servers:
+          children:
+            root_controller:
+              hosts:
+                GOAD-DC01:
+                  ansible_host: 10.69.11.5
+            domain_controllers:
+              hosts:
+                GOAD-DC02:
+                  ansible_host: 10.69.11.6
+          vars:
+            ansible_user: "{{ server_user }}"
+            ansible_password: "{{ server_password }}"
+        workstations:
+          children:
+            victims:
+              hosts:
+                GOAD-WORK01:
+                  ansible_host: 10.69.11.7
+                GOAD-WORK02:
+                  ansible_host: 10.69.11.8
+              vars:
+                ansible_password: "{{ workstation_password }}"
+                ansible_user: "{{ workstation_user }}"

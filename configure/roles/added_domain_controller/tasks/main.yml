@@ -1,0 +1,56 @@
+---
+# 1. First, tell the NIC where the DNS Server is (DC1)
+- name: Set DNS to Primary DC (CRITICAL FIRST STEP)
+  ansible.windows.win_dns_client:
+    adapter_names: '*'
+    ipv4_addresses:
+      - "{{ dc1_ip }}" # 10.69.11.5
+      - "8.8.8.8"      # Backup (optional, but good for internet access)
+
+# 2. Flush the cache so Windows forgets the previous failures
+- name: Flush DNS Cache
+  ansible.windows.win_shell: |
+    ipconfig /flushdns
+    Start-Sleep -Seconds 5
+
+# 3. NOW verify resolution (This should now succeed)
+- name: Debug - Verify Domain Resolution
+  ansible.windows.win_shell: |
+    Resolve-DnsName -Name "{{ domain_name }}" -Type A | Select-Object -ExpandProperty IPAddress
+  register: dns_check
+  ignore_errors: yes
+
+- name: Print DNS Resolution
+  debug:
+    var: dns_check.stdout_lines
+
+# 4. Wait for connectivity from the WINDOWS side (More accurate than localhost)
+- name: Verify connectivity to DC1 Port 53 (DNS)
+  ansible.windows.win_wait_for:
+    host: "{{ dc1_ip }}"
+    port: 53
+    state: started
+    timeout: 60
+
+- name: Verify connectivity to DC1 Port 389 (LDAP)
+  ansible.windows.win_wait_for:
+    host: "{{ dc1_ip }}"
+    port: 389
+    state: started
+    timeout: 60
+
+# 5. Finally, Promote
+- name: Promote Replica Domain Controller
+  ansible.windows.win_domain_controller:
+    dns_domain_name: "{{ domain_name }}"
+    safe_mode_password: "{{ safe_mode_password }}"
+    domain_admin_user: "{{ server_user }}@{{ domain_name }}"
+    domain_admin_password: "{{ server_password }}"
+    state: domain_controller
+  register: ad_replica_promotion
+
+- name: Reboot after Promotion
+  ansible.windows.win_reboot:
+    msg: "Installing AD DS and rebooting..."
+    pre_reboot_delay: 15
+  when: (ad_replica_promotion.reboot_required | default(false))

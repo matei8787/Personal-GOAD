@@ -1,0 +1,16 @@
+// Copy to variables.auto.pkrvars.hcl and fill in.
+// The real file is git-ignored; never commit it.
+
+proxmox_url      = "https://pve.example.internal:8006/api2/json"
+proxmox_token_id = "root@pam!packer"
+proxmox_token    = "REPLACE_ME"
+
+// Build-time Administrator password. Generate a throwaway value, e.g.
+//   openssl rand -base64 18
+build_password = "REPLACE_ME"
+
+iso_file   = "local:iso/WindowsServer2019.iso"
+virtio_iso = "local:iso/virtio-win-0.1.285.iso"
+
+// Uncomment only while the Proxmox API still has a self-signed certificate.
+// proxmox_insecure = true

@@ -1,0 +1,17 @@
+# Terraform
+*.tfvars
+!*.tfvars.example
+*.tfstate*
+*.lock.hcl*
+*.terraform/
+
+# Packer variable values (contain the API token and build password)
+*.pkrvars.hcl
+!*.pkrvars.hcl.example
+
+# Ansible secrets
+configure/inventory/group_vars/all/vault.yml
+*.retry
+
+# Editor
+.vscode/

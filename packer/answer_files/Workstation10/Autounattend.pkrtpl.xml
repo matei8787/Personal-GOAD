@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend" xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <settings pass="windowsPE">
+        <component name="Microsoft-Windows-PnpCustomizationsWinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <DriverPaths>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="1"><Path>D:\vioscsi\w10\amd64</Path></PathAndCredentials>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="2"><Path>E:\vioscsi\w10\amd64</Path></PathAndCredentials>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="3"><Path>F:\vioscsi\w10\amd64</Path></PathAndCredentials>
+                
+                <PathAndCredentials wcm:action="add" wcm:keyValue="4"><Path>D:\NetKVM\w10\amd64</Path></PathAndCredentials>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="5"><Path>E:\NetKVM\w10\amd64</Path></PathAndCredentials>
+                <PathAndCredentials wcm:action="add" wcm:keyValue="6"><Path>F:\NetKVM\w10\amd64</Path></PathAndCredentials>
+            </DriverPaths>
+        </component>
+
+        <component name="Microsoft-Windows-International-Core-WinPE" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <SetupUILanguage>
+                <UILanguage>en-US</UILanguage>
+            </SetupUILanguage>
+            <InputLocale>en-US</InputLocale>
+            <SystemLocale>en-US</SystemLocale>
+            <UILanguage>en-US</UILanguage>
+            <UserLocale>en-US</UserLocale>
+        </component>
+        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+    
+            <DiskConfiguration>
+                <Disk wcm:action="add">
+                    <DiskID>0</DiskID>
+                    <WillWipeDisk>true</WillWipeDisk>
+                    <CreatePartitions>
+                        <CreatePartition wcm:action="add">
+                            <Order>1</Order>
+                            <Type>EFI</Type>
+                            <Size>100</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>2</Order>
+                            <Type>MSR</Type>
+                            <Size>16</Size>
+                        </CreatePartition>
+                        <CreatePartition wcm:action="add">
+                            <Order>3</Order>
+                            <Type>Primary</Type>
+                            <Extend>true</Extend>
+                        </CreatePartition>
+                    </CreatePartitions>
+                    
+                    <ModifyPartitions>
+                        <ModifyPartition wcm:action="add">
+                            <Order>1</Order>
+                            <PartitionID>1</PartitionID>
+                            <Label>System</Label>
+                            <Format>FAT32</Format>
+                        </ModifyPartition>
+                        <ModifyPartition wcm:action="add">
+                            <Order>2</Order>
+                            <PartitionID>3</PartitionID>
+                            <Label>Windows</Label>
+                            <Letter>C</Letter>
+                            <Format>NTFS</Format>
+                        </ModifyPartition>
+                    </ModifyPartitions>
+                </Disk>
+            </DiskConfiguration>
+
+            <ImageInstall>
+                <OSImage>
+                    <InstallTo>
+                        <DiskID>0</DiskID>
+                        <PartitionID>3</PartitionID> 
+                    </InstallTo>
+                </OSImage>
+            </ImageInstall>
+
+            <UserData>
+                <AcceptEula>true</AcceptEula>
+                <FullName>Administrator</FullName>
+                <Organization>HomeLab</Organization>
+            </UserData>
+        </component>
+    </settings>
+    <settings pass="oobeSystem">
+        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <UserAccounts>
+                <AdministratorPassword>
+                    <Value>${build_password}</Value>
+                    <PlainText>true</PlainText>
+                </AdministratorPassword>
+            </UserAccounts>
+            <AutoLogon>
+                <Password>
+                    <Value>${build_password}</Value>
+                    <PlainText>true</PlainText>
+                </Password>
+                <Enabled>true</Enabled>
+                <LogonCount>1</LogonCount>
+                <Username>Administrator</Username>
+            </AutoLogon>
+            <FirstLogonCommands>
+            <!-- Doesn't work. Still needs manual.
+            <SynchronousCommand wcm:action="add">
+                <Order>1</Order>
+                <CommandLine>powershell -Command "Get-PSDrive -PSProvider FileSystem | ForEach-Object { if (Test-Path ($_.Root + 'virtio-win-guest-tools.exe')) { Write-Host 'Found Tools on' $_.Root; Start-Process -FilePath ($_.Root + 'virtio-win-guest-tools.exe') -ArgumentList '/install', '/passive', '/norestart' -Wait } }"</CommandLine>
+                <Description>Install VirtIO Guest Tools (EXE)</Description>
+            </SynchronousCommand>
+            -->
+
+            <SynchronousCommand wcm:action="add">
+                <Order>2</Order>
+                <CommandLine>powershell -Command "Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False"</CommandLine>
+                <Description>Disable Firewall</Description>
+            </SynchronousCommand>
+
+            <SynchronousCommand wcm:action="add">
+                <Order>3</Order>
+                <CommandLine>powershell -Command "Set-ExecutionPolicy Unrestricted -Force; Enable-PSRemoting -SkipNetworkProfileCheck -Force; Set-Item WSMan:\localhost\Service\Auth\Basic -Value $true; Set-Item WSMan:\localhost\Service\AllowUnencrypted -Value $true"</CommandLine>
+                <Description>Enable WinRM</Description>
+            </SynchronousCommand>
+        </FirstLogonCommands>
+        </component>
+    </settings>
+</unattend>
